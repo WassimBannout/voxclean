@@ -33,6 +33,7 @@ cpal = { version = "0.18", features = ["pulseaudio"] }
 rubato = "5"
 # The defaults cover WAV, FLAC and OGG Vorbis; these add MP3 and M4A.
 symphonia = { version = "0.6", features = ["mp3", "aac", "alac", "isomp4"] }
+whisper-rs = "0.16"
 
 [dev-dependencies]
 # Mock runtime for calling commands through IPC in tests.

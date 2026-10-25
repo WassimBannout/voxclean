@@ -30,38 +30,39 @@ The frontend (`src/`, React 19 + TypeScript + Tailwind v4) owns UI and workflow 
 
 ### Backend commands
 
-Built: `system_status`, `process_text(text, mode)`, `pull_model` (emits `model-pull-progress`), plus the dialog and clipboard plugins, and the audio commands:
+Every command the UI calls is built: `system_status`, `process_text(text, mode)`, `pull_model` (emits `model-pull-progress`), the dialog and clipboard plugins, and these:
 
-| Command / event                              | Returns / payload                                                 | Errors                                                       |
-| -------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
-| `list_input_devices`                         | `InputDevice[]` (`{ id, name, isDefault }`), default first        | `microphone_unavailable`                                     |
-| `start_recording(device_id: Option<String>)` | `()`; once recording runs, the previous clip is dropped           | `microphone_unavailable`                                     |
-| `pause_recording`, `resume_recording`        | `()`                                                              | `not_recording`, `microphone_unavailable`                    |
-| `stop_recording`                             | `AudioClip` (`{ durationMs, peaks: [0–1; 72] }`); keeps the audio | `not_recording`, `microphone_unavailable`                    |
-| `discard_recording`                          | `()`; drops the recording in progress and the kept audio          |                                                              |
-| `load_audio_file(path)`                      | `AudioClip`; keeps the audio                                      | `unsupported_format`, `file_unreadable` (both name the file) |
-| event `recording-level`                      | `f32` 0–1, every 100 ms while recording and not paused            |                                                              |
-
-Planned. The UI already calls these with the signatures in `src/lib/ipc.ts`, and until they exist it shows the "Command … not found" error:
-
-| Command / event                        | Returns / payload                                                                     | Errors                   |
-| -------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------ |
-| `transcribe(language: Option<String>)` | `Transcript` (`{ segments: [{ startMs, endMs, text }], language, languageDetected }`) | `no_speech`, `cancelled` |
-| `cancel_transcription`                 | `()`; the pending `transcribe` rejects `cancelled`                                    |                          |
-| event `transcription-progress`         | `f32` 0–1                                                                             |                          |
+| Command / event                              | Returns / payload                                                                                       | Errors                                                       |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `list_input_devices`                         | `InputDevice[]` (`{ id, name, isDefault }`), default first                                              | `microphone_unavailable`                                     |
+| `start_recording(device_id: Option<String>)` | `()`; once recording runs, the previous clip is dropped                                                 | `microphone_unavailable`                                     |
+| `pause_recording`, `resume_recording`        | `()`                                                                                                    | `not_recording`, `microphone_unavailable`                    |
+| `stop_recording`                             | `AudioClip` (`{ durationMs, peaks: [0–1; 72] }`); keeps the audio                                       | `not_recording`, `microphone_unavailable`                    |
+| `discard_recording`                          | `()`; drops the recording in progress and the kept audio                                                |                                                              |
+| `load_audio_file(path)`                      | `AudioClip`; keeps the audio                                                                            | `unsupported_format`, `file_unreadable` (both name the file) |
+| `transcribe(language: Option<String>)`       | `Transcript` (`{ segments: [{ startMs, endMs, text }], language, languageDetected }`) of the kept audio | `no_audio`, `no_speech`, `cancelled`, `transcription_error`  |
+| `cancel_transcription`                       | `()`; the pending `transcribe` rejects `cancelled`                                                      |                                                              |
+| event `recording-level`                      | `f32` 0–1, every 100 ms while recording and not paused                                                  |                                                              |
+| event `transcription-progress`               | `f32` 0–1                                                                                               |                                                              |
 
 Audio (`src-tauri/src/audio/`):
 
 - `capture.rs` records with `cpal`, `decode.rs` reads WAV, MP3, M4A (AAC/ALAC), FLAC and OGG Vorbis with `symphonia`, and `resample.rs` converts to 16 kHz with `rubato`. Recording happens in Rust rather than through `getUserMedia`, because WebKitGTK media capture on Linux is unreliable and its WebM/Opus output would need another decoder.
-- Audio is held as `Audio` (16 kHz mono f32) in `AppState::audio()`: `AudioSession { recorder, clip }`. `clip` is what `transcribe` will read. The UI calls `discard_recording` on Remove and Start over, so audio the UI can't reach isn't kept.
+- Audio is held as `Audio` (16 kHz mono f32) in `AppState::audio()`: `AudioSession { recorder, clip }`, where `clip` is what `transcribe` reads. The UI calls `discard_recording` on Remove and Start over, so audio the UI can't reach isn't kept.
 - cpal uses its PulseAudio host, which PipeWire's pulse server also serves, and falls back to ALSA. Capture asks for 20 ms buffers because PulseAudio's default buffer delays the first audio by about 2 s and starves the level meter. A 40 Hz DC filter removes the slowly fading offset some built-in mics start with.
-- Decoding and resampling run on blocking threads (`off_runtime` in `commands.rs`). Never hold the `audio()` guard across an `.await`.
-- The `commands.rs` tests call commands through Tauri's mock IPC (`tauri::test`), which checks argument names against what `ipc.ts` sends. The microphone test is ignored by default: `cargo test -- --ignored records_from_the_default_microphone`.
+- Decoding, resampling and transcribing run on blocking threads (`off_runtime` in `commands.rs`). Never hold the `audio()` guard across an `.await`.
 
-Still to build:
+Transcription (`src-tauri/src/transcription/`):
 
-- `src-tauri/src/transcription/`: `whisper-rs` (whisper.cpp bindings; building it needs cmake and libclang). Run inference with `tauri::async_runtime::spawn_blocking`.
-- Clip playback on the "Ready to transcribe" screen is in the design but not built yet; it would play `AudioSession::clip`.
+- `whisper-rs` (whisper.cpp; building it needs cmake and libclang). `Transcriber` keeps the model loaded after the first use (about 2 s to load) and holds the cancel flag of the running job; a new transcription cancels the one before.
+- Beam search with 5 beams on at most 4 threads, both whisper.cpp's defaults. Whisper's encoder always works on a 30-second window, so any clip under 30 s takes about the same time: about 5 s on an i7-8665U laptop.
+- Silent audio fails with `no_speech` before reaching Whisper, which otherwise makes up text such as "Thank you.". Segments that are only notes like `[BLANK_AUDIO]` or `(music)` are dropped.
+- English-only models (`.en`) are always run in English.
+- whisper-rs 0.16's `set_abort_callback_safe` reads its closure back as the wrong type, so a plain closure makes whisper.cpp abort at random ("Error code: -6"). Keep passing a `Box<dyn FnMut() -> bool>`, and recheck when upgrading whisper-rs.
+
+Tests: the `commands.rs` tests call commands through Tauri's mock IPC (`tauri::test`), which checks argument names against what `ipc.ts` sends. Three tests need hardware or the model and are ignored by default: `cargo test -- --ignored records_from_the_default_microphone` needs a microphone, and `cargo test -- --ignored transcribes_` runs the installed model on Ubuntu's `/usr/share/sounds/alsa/Front_Center.wav`, directly and through IPC.
+
+Not built yet: clip playback on the "Ready to transcribe" screen, which is in the design; it would play `AudioSession::clip`.
 
 ### Adding a command
 

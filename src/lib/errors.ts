@@ -1,8 +1,6 @@
 /**
- * Mirrors `AppError::code` in src-tauri/src/error.rs. `no_speech` and
- * `cancelled` are the contract for the transcription commands that aren't
- * built yet. `unknown` covers failures that never reached a command (e.g. a
- * missing command name).
+ * Mirrors `AppError::code` in src-tauri/src/error.rs. `unknown` covers
+ * failures that never reached a command (e.g. a missing command name).
  */
 export type AppErrorCode =
   | "ollama_unavailable"
@@ -15,8 +13,10 @@ export type AppErrorCode =
   | "microphone_unavailable"
   | "not_recording"
   | "audio_error"
+  | "no_audio"
   | "no_speech"
   | "cancelled"
+  | "transcription_error"
   | "unknown";
 
 /** What every Rust command rejects with. `message` is written for the user. */

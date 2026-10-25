@@ -21,7 +21,7 @@ pub const SAMPLE_RATE: u32 = 16_000;
 /// Bars in the waveform overview; the design draws 72.
 const PEAK_COUNT: usize = 72;
 
-/// Below this RMS (-60 dBFS) a clip counts as silent.
+/// Below this RMS (-60 dBFS) audio counts as silent.
 const SILENCE_RMS: f32 = 0.001;
 
 /// Mono audio at [`SAMPLE_RATE`].
@@ -37,6 +37,15 @@ impl Audio {
         Ok(Self {
             samples: resample::to_sample_rate(samples, sample_rate)?,
         })
+    }
+
+    pub fn samples(&self) -> &[f32] {
+        &self.samples
+    }
+
+    /// Whether the audio is too quiet to hold speech, as from a muted mic.
+    pub fn is_silent(&self) -> bool {
+        rms(&self.samples) < SILENCE_RMS
     }
 
     /// The part of the audio the frontend gets to see.

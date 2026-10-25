@@ -4,6 +4,7 @@ mod config;
 mod error;
 mod llm;
 mod state;
+mod transcription;
 
 use tauri::Manager;
 
@@ -32,7 +33,9 @@ pub fn run() {
             commands::resume_recording,
             commands::stop_recording,
             commands::discard_recording,
-            commands::load_audio_file
+            commands::load_audio_file,
+            commands::transcribe,
+            commands::cancel_transcription
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

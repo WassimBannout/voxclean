@@ -6,8 +6,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { toAppError } from "./errors";
 
 // The only module that touches Tauri APIs, so every failure reaches the UI as
-// an AppError. Commands marked "planned" are not implemented in Rust yet; the
-// UI is built against these signatures (see CLAUDE.md).
+// an AppError. The commands are listed in CLAUDE.md.
 
 /** Mirrors `llm::prompts::Mode` in Rust. */
 export type ProcessingMode = "clean" | "summarize";
@@ -145,12 +144,15 @@ export function loadAudioFile(path: string): Promise<AudioClip> {
   return call("load_audio_file", { path });
 }
 
-/** Planned. `null` lets Whisper detect the language. */
+/**
+ * Transcribes the audio the backend kept. `null` lets Whisper detect the
+ * language. Rejects with `no_speech` when it hears none.
+ */
 export function transcribe(language: string | null): Promise<Transcript> {
   return call("transcribe", { language });
 }
 
-/** Planned. The pending `transcribe` call rejects with `cancelled`. */
+/** The pending `transcribe` call rejects with `cancelled`. */
 export function cancelTranscription(): Promise<void> {
   return call("cancel_transcription");
 }
@@ -162,7 +164,7 @@ export function onRecordingLevel(
   return subscribe("recording-level", handler);
 }
 
-/** Planned. Fraction of the audio transcribed so far, 0–1. */
+/** Fraction of the audio transcribed so far, 0–1. */
 export function onTranscriptionProgress(
   handler: (progress: number) => void,
 ): Promise<UnlistenFn> {

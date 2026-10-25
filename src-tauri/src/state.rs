@@ -1,13 +1,15 @@
-use std::sync::{Mutex, MutexGuard, PoisonError};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use crate::audio::{Audio, Recorder};
 use crate::config::Settings;
 use crate::llm::ollama::OllamaClient;
+use crate::transcription::Transcriber;
 
 /// Shared state handed to every command through `tauri::State`.
 pub struct AppState {
     pub settings: Settings,
     pub ollama: OllamaClient,
+    pub transcriber: Arc<Transcriber>,
     audio: Mutex<AudioSession>,
 }
 
@@ -18,7 +20,7 @@ pub struct AudioSession {
     /// The recording in progress.
     pub recorder: Option<Recorder>,
     /// The audio to transcribe: the last finished recording or loaded file.
-    pub clip: Option<Audio>,
+    pub clip: Option<Arc<Audio>>,
 }
 
 impl AppState {
@@ -26,6 +28,7 @@ impl AppState {
         Self {
             settings,
             ollama,
+            transcriber: Arc::default(),
             audio: Mutex::default(),
         }
     }

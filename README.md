@@ -10,15 +10,15 @@ Turn spoken audio into clean, readable text on your own computer. VoxClean trans
    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
    ```
 
-2. **Tauri system libraries** (Ubuntu/Debian; other platforms: <https://tauri.app/start/prerequisites/>):
+2. **System libraries** (Ubuntu/Debian; for Tauri on other platforms see <https://tauri.app/start/prerequisites/>):
 
    ```sh
    sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file \
      libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev \
-     libasound2-dev
+     libasound2-dev clang cmake
    ```
 
-   `libasound2-dev` is for microphone recording. Whisper will also need `sudo apt install clang cmake`.
+   `libasound2-dev` is for microphone recording; `clang` and `cmake` build whisper.cpp, which the first `cargo` build compiles (a few minutes).
 
 3. **Node.js 20+** and npm.
 

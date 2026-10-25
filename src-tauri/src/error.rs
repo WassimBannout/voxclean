@@ -36,6 +36,18 @@ pub enum AppError {
 
     #[error("Audio processing failed: {0}")]
     Audio(String),
+
+    #[error("There's no audio to transcribe. Record or upload audio first.")]
+    NoAudio,
+
+    #[error("No speech was found in this audio.")]
+    NoSpeech,
+
+    #[error("Transcription was cancelled.")]
+    Cancelled,
+
+    #[error("Transcription failed: {0}.")]
+    Transcription(String),
 }
 
 impl AppError {
@@ -53,6 +65,10 @@ impl AppError {
             Self::FileUnreadable { .. } => "file_unreadable",
             Self::NotRecording => "not_recording",
             Self::Audio(_) => "audio_error",
+            Self::NoAudio => "no_audio",
+            Self::NoSpeech => "no_speech",
+            Self::Cancelled => "cancelled",
+            Self::Transcription(_) => "transcription_error",
         }
     }
 }
