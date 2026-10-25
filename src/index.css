@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Tokens from the VoxClean App Design canvas. */
+@theme {
+  --font-sans: "Instrument Sans Variable", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-canvas: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-sunken: #fafafb;
+  --color-track: #e9ebef;
+  --color-line: #e3e5ea;
+  --color-line-strong: #868c98;
+  --color-rule: #c9cdd4;
+  --color-ink: #16181d;
+  --color-ink-soft: #3f4450;
+  --color-muted: #5b616e;
+  --color-record: #c2410c;
+  --color-record-soft: #fdede4;
+  --color-record-ink: #9a3412;
+  --color-ok: #15803d;
+  --color-ok-soft: #e8f5ec;
+  --color-ok-ink: #166534;
+
+  /* The design sets no default line-height, so text uses the font's own
+     ("normal"). Explicit leading-* utilities still apply where it sets one. */
+  --text-xs--line-height: normal;
+  --text-sm--line-height: normal;
+  --text-base--line-height: normal;
+  --text-lg--line-height: normal;
+  --text-xl--line-height: normal;
+
+  --animate-indeterminate: indeterminate 1.4s ease-in-out infinite;
+
+  @keyframes indeterminate {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(300%);
+    }
+  }
+}
+
+@layer base {
+  html {
+    line-height: normal;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+
+  :where(a, button, select, textarea, input):focus-visible {
+    @apply outline-2 outline-offset-2 outline-ink;
+  }
+
+  /* Words removed by Clean Transcript, shown in the original. */
+  del {
+    @apply rounded-[3px] bg-record-soft px-0.5 text-record-ink decoration-record decoration-[1.5px];
+  }
+}

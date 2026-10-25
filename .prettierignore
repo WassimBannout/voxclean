@@ -1,0 +1,7 @@
+src-tauri/target
+src-tauri/gen
+package-lock.json
+.visual
+# Exported from the design canvas; keep byte-for-byte.
+design/artboards
+design/canvas.json

@@ -1,0 +1,80 @@
+{
+  "defaults": { "minPixel": 0.99, "minLayout": 0.995 },
+  "screens": [
+    {
+      "name": "start",
+      "artboard": "Main.dc.html",
+      "query": "screen=start",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "recording",
+      "artboard": "Recording.dc.html",
+      "query": "screen=recording",
+      "width": 1280,
+      "height": 800,
+      "settleMs": 1200
+    },
+    {
+      "name": "ready",
+      "artboard": "ClipReady.dc.html",
+      "query": "screen=ready",
+      "width": 1280,
+      "height": 800,
+      "minPixel": 0.98,
+      "minLayout": 0.99,
+      "why": "No clip playback yet: without the play button the clip's title and duration sit 64px off (design/deviations.md)."
+    },
+    {
+      "name": "transcribing",
+      "artboard": "Transcribing.dc.html",
+      "query": "screen=transcribing",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "transcript",
+      "artboard": "Transcript.dc.html",
+      "query": "screen=transcript",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "result",
+      "artboard": "Result.dc.html",
+      "query": "screen=result",
+      "width": 1280,
+      "height": 880
+    },
+    {
+      "name": "result-summary",
+      "artboard": "Result.dc.html",
+      "props": { "mode": "summary" },
+      "query": "screen=result-summary",
+      "width": 1280,
+      "height": 880
+    },
+    {
+      "name": "setup",
+      "artboard": "Setup.dc.html",
+      "query": "screen=setup&hold=64",
+      "width": 1280,
+      "height": 860,
+      "steps": [{ "click": "Download" }, { "waitFor": "64%" }],
+      "minPixel": 0.975,
+      "minLayout": 0.975,
+      "why": "No model switching or saved recordings yet: the \"Change\" button and the privacy checkbox are missing (design/deviations.md)."
+    },
+    {
+      "name": "errors",
+      "artboard": "Errors.dc.html",
+      "query": "screen=errors",
+      "width": 1280,
+      "height": 840,
+      "minPixel": 0.98,
+      "minLayout": 0.98,
+      "why": "The meaning-check card lives on the Result screen, and two design-only buttons are left out (design/deviations.md)."
+    }
+  ]
+}

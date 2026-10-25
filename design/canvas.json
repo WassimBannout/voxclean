@@ -1,0 +1,33 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-25T10:00:00Z" },
+  "title": "VoxClean App Design",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "1 · Start", "expand": "fill", "is_interactive": true },
+    "Recording.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "2 · Recording", "expand": "fill", "is_interactive": true },
+    "ClipReady.dc.html": { "x": 2720, "y": 0, "w": 1280, "h": 800, "title": "3 · Ready to transcribe", "expand": "fill", "is_interactive": true },
+    "Transcribing.dc.html": { "x": 0, "y": 1300, "w": 1280, "h": 800, "title": "4 · Transcribing", "expand": "fill", "is_interactive": true },
+    "Transcript.dc.html": { "x": 1360, "y": 1300, "w": 1280, "h": 800, "title": "5 · Original transcript", "expand": "fill", "is_interactive": true },
+    "Result.dc.html": { "x": 2720, "y": 1300, "w": 1280, "h": 880, "title": "6 · Result (clean / summary, editable)", "expand": "fill", "is_interactive": true },
+    "Setup.dc.html": { "x": 0, "y": 2600, "w": 1280, "h": 860, "title": "First-run model setup", "expand": "fill", "is_interactive": true },
+    "Errors.dc.html": { "x": 1360, "y": 2600, "w": 1280, "h": 840, "title": "Errors and edge states" }
+  },
+  "order": [
+    "Main.dc.html",
+    "Recording.dc.html",
+    "ClipReady.dc.html",
+    "Transcribing.dc.html",
+    "Transcript.dc.html",
+    "Result.dc.html",
+    "Setup.dc.html",
+    "Errors.dc.html"
+  ],
+  "notes": {
+    "rowCapture": { "x": 0, "y": -300, "text": "Capture audio", "kind": "title1", "maxW": 4000 },
+    "rowProcess": { "x": 0, "y": 1000, "text": "Transcribe, review, clean up", "kind": "title1", "maxW": 4000 },
+    "rowStates": { "x": 0, "y": 2300, "text": "Setup and edge states", "kind": "title1", "maxW": 2640 }
+  },
+  "designSystems": []
+}
