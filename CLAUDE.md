@@ -84,7 +84,8 @@ UI changes go through the `visual-fidelity` skill (`.claude/skills/visual-fideli
 ## Commands
 
 ```sh
-npm run tauri dev          # run the app (Vite on :1420 + Rust)
+npm run tauri dev          # run the app (Vite on :1420 + Rust); use its window, not a browser tab
+npm run tauri build -- --bundles deb   # release .deb in src-tauri/target/release/bundle/deb/
 npm run dev                # browser only; open http://localhost:1420/preview.html (?screen=<name>, ?setup)
 npm run check              # typecheck, lint, format check, frontend tests
 npm run check:rust         # rustfmt, clippy, Rust tests

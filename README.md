@@ -52,6 +52,19 @@ npm run check               # typecheck, lint, format check, frontend tests
 cd src-tauri && cargo test  # backend tests
 ```
 
+## Installing
+
+Build a Debian/Ubuntu package and install it (the first build takes several minutes):
+
+```sh
+npm run tauri build -- --bundles deb
+sudo apt install ./src-tauri/target/release/bundle/deb/VoxClean_0.1.0_amd64.deb
+```
+
+VoxClean then appears in your applications. It uses the same models as the development build. Remove it with `sudo apt remove vox-clean`.
+
+whisper.cpp is compiled for the CPU it's built on, so a package built this way may not run on older processors. To build one to share, run `GGML_NATIVE=OFF npm run tauri build -- --bundles deb` after `cargo clean` in `src-tauri`.
+
 ## Configuration
 
 | Variable                 | Default                                                    |
