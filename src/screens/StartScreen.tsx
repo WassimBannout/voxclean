@@ -84,7 +84,8 @@ export function StartScreen({
 
       {error && (
         <ErrorCard error={error} model={model}>
-          {error.code === "unsupported_format" && (
+          {(error.code === "unsupported_format" ||
+            error.code === "file_unreadable") && (
             <Button variant="primary" onClick={onChooseFile}>
               Choose another file
             </Button>

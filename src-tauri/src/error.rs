@@ -19,6 +19,23 @@ pub enum AppError {
 
     #[error("There is no text to process.")]
     EmptyInput,
+
+    #[error("{reason}")]
+    MicrophoneUnavailable { reason: String },
+
+    #[error(
+        "“{file}” isn't a format VoxClean can read. Use a WAV, MP3, M4A, FLAC or OGG file instead."
+    )]
+    UnsupportedFormat { file: String },
+
+    #[error("Couldn't open “{file}”: {reason}.")]
+    FileUnreadable { file: String, reason: String },
+
+    #[error("No recording is in progress.")]
+    NotRecording,
+
+    #[error("Audio processing failed: {0}")]
+    Audio(String),
 }
 
 impl AppError {
@@ -31,6 +48,11 @@ impl AppError {
             Self::Ollama(_) => "ollama_error",
             Self::Config(_) => "config_error",
             Self::EmptyInput => "empty_input",
+            Self::MicrophoneUnavailable { .. } => "microphone_unavailable",
+            Self::UnsupportedFormat { .. } => "unsupported_format",
+            Self::FileUnreadable { .. } => "file_unreadable",
+            Self::NotRecording => "not_recording",
+            Self::Audio(_) => "audio_error",
         }
     }
 }

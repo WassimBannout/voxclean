@@ -35,6 +35,7 @@ export function describeError(error: AppError, model: string): ErrorContent {
         tone: "neutral",
       };
     case "unsupported_format":
+    case "file_unreadable":
       // The backend names the file in its message.
       return {
         area: "Upload",

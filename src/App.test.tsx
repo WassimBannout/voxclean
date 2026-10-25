@@ -226,6 +226,44 @@ describe("App", () => {
     expect(screen.getByText("0:42")).toBeInTheDocument();
   });
 
+  it("drops the backend's audio when the clip is removed", async () => {
+    const user = userEvent.setup();
+    vi.mocked(ipc.pickAudioFile).mockResolvedValue("/home/me/memo.wav");
+    vi.mocked(ipc.loadAudioFile).mockResolvedValue({
+      durationMs: 9_000,
+      peaks: [0.3, 0.6],
+    });
+    vi.mocked(ipc.discardRecording).mockResolvedValue();
+    render(<App />);
+
+    await user.click(
+      await screen.findByRole("button", { name: "Choose file" }),
+    );
+    await user.click(await screen.findByRole("button", { name: "Remove" }));
+    expect(
+      await screen.findByRole("heading", {
+        name: "Turn speech into clean text",
+      }),
+    ).toBeInTheDocument();
+    expect(ipc.discardRecording).toHaveBeenCalledOnce();
+  });
+
+  it("drops the backend's audio when starting over", async () => {
+    const user = userEvent.setup();
+    vi.mocked(ipc.discardRecording).mockResolvedValue();
+    await openTranscript(user);
+
+    await user.click(
+      screen.getByRole("button", { name: "Start over with new audio" }),
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Turn speech into clean text",
+      }),
+    ).toBeInTheDocument();
+    expect(ipc.discardRecording).toHaveBeenCalledOnce();
+  });
+
   it("reports a backend command that isn't available yet", async () => {
     const user = userEvent.setup();
     vi.mocked(ipc.pickAudioFile).mockResolvedValue("/home/me/memo.wav");

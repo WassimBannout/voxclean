@@ -1,8 +1,8 @@
 /**
- * Mirrors `AppError::code` in src-tauri/src/error.rs. The audio codes
- * (`unsupported_format` … `cancelled`) are the contract for the recording and
- * transcription commands that aren't built yet. `unknown` covers failures
- * that never reached a command (e.g. a missing command name).
+ * Mirrors `AppError::code` in src-tauri/src/error.rs. `no_speech` and
+ * `cancelled` are the contract for the transcription commands that aren't
+ * built yet. `unknown` covers failures that never reached a command (e.g. a
+ * missing command name).
  */
 export type AppErrorCode =
   | "ollama_unavailable"
@@ -11,7 +11,10 @@ export type AppErrorCode =
   | "config_error"
   | "empty_input"
   | "unsupported_format"
+  | "file_unreadable"
   | "microphone_unavailable"
+  | "not_recording"
+  | "audio_error"
   | "no_speech"
   | "cancelled"
   | "unknown";

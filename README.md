@@ -14,10 +14,11 @@ Turn spoken audio into clean, readable text on your own computer. VoxClean trans
 
    ```sh
    sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file \
-     libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+     libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev \
+     libasound2-dev
    ```
 
-   Microphone recording and Whisper will also need `sudo apt install libasound2-dev clang`.
+   `libasound2-dev` is for microphone recording. Whisper will also need `sudo apt install clang cmake`.
 
 3. **Node.js 20+** and npm.
 

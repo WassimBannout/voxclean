@@ -27,6 +27,16 @@ url = "2"
 # No TLS features on purpose: VoxClean only talks to Ollama over loopback
 # HTTP, so the binary cannot reach remote HTTPS services.
 reqwest = { version = "0.13", default-features = false, features = ["json"] }
+# PulseAudio (PipeWire's pulse server included) names devices the way the
+# system does; without a pulse server cpal falls back to raw ALSA.
+cpal = { version = "0.18", features = ["pulseaudio"] }
+rubato = "5"
+# The defaults cover WAV, FLAC and OGG Vorbis; these add MP3 and M4A.
+symphonia = { version = "0.6", features = ["mp3", "aac", "alac", "isomp4"] }
+
+[dev-dependencies]
+# Mock runtime for calling commands through IPC in tests.
+tauri = { version = "2", features = ["test"] }
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
 [profile.release]

@@ -1,3 +1,4 @@
+mod audio;
 mod commands;
 mod config;
 mod error;
@@ -18,13 +19,20 @@ pub fn run() {
         .setup(|app| {
             let settings = Settings::from_env(&app.path().app_data_dir()?)?;
             let ollama = OllamaClient::new(settings.ollama_url.clone())?;
-            app.manage(AppState { settings, ollama });
+            app.manage(AppState::new(settings, ollama));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             commands::system_status,
             commands::process_text,
-            commands::pull_model
+            commands::pull_model,
+            commands::list_input_devices,
+            commands::start_recording,
+            commands::pause_recording,
+            commands::resume_recording,
+            commands::stop_recording,
+            commands::discard_recording,
+            commands::load_audio_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

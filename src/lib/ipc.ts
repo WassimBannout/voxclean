@@ -105,37 +105,42 @@ export function onModelPullProgress(
   return subscribe("model-pull-progress", handler);
 }
 
-/** Planned. */
+/** Microphones, the system default first. */
 export function listInputDevices(): Promise<InputDevice[]> {
   return call("list_input_devices");
 }
 
-/** Planned. `null` records from the system default device. */
+/**
+ * `null` records from the system default device. Once recording starts, the
+ * audio from before is dropped.
+ */
 export function startRecording(deviceId: string | null): Promise<void> {
   return call("start_recording", { deviceId });
 }
 
-/** Planned. */
 export function pauseRecording(): Promise<void> {
   return call("pause_recording");
 }
 
-/** Planned. */
 export function resumeRecording(): Promise<void> {
   return call("resume_recording");
 }
 
-/** Planned. */
+/** The backend keeps the audio for `transcribe`. */
 export function stopRecording(): Promise<AudioClip> {
   return call("stop_recording");
 }
 
-/** Planned. */
+/** Drops the recording in progress and any audio kept for `transcribe`. */
 export function discardRecording(): Promise<void> {
   return call("discard_recording");
 }
 
-/** Planned. Rejects with `unsupported_format` for files it can't decode. */
+/**
+ * The backend keeps the audio for `transcribe`. Rejects with
+ * `unsupported_format` for files it can't decode and `file_unreadable` for
+ * files it can't open.
+ */
 export function loadAudioFile(path: string): Promise<AudioClip> {
   return call("load_audio_file", { path });
 }
@@ -150,7 +155,7 @@ export function cancelTranscription(): Promise<void> {
   return call("cancel_transcription");
 }
 
-/** Planned. Input level 0–1, emitted while recording. */
+/** Input level 0–1, every 100 ms while recording and not paused. */
 export function onRecordingLevel(
   handler: (level: number) => void,
 ): Promise<UnlistenFn> {

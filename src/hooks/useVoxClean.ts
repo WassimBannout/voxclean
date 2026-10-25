@@ -5,6 +5,7 @@ import * as ipc from "../lib/ipc";
 import type { InputDevice, ProcessingMode } from "../lib/ipc";
 import {
   initialState,
+  isBusy,
   transcriptText,
   workflowReducer,
   type WorkflowState,
@@ -28,6 +29,16 @@ export function useVoxClean(startState: WorkflowState = initialState) {
   const actions = useMemo(() => {
     const audioFailed = (err: unknown) =>
       dispatch({ type: "audioFailed", error: toAppError(err) });
+
+    // Leaving audio behind goes back to the start screen first, then drops
+    // the audio the backend holds; a failure shows on the start screen.
+    async function releaseAudio() {
+      try {
+        await ipc.discardRecording();
+      } catch (err) {
+        audioFailed(err);
+      }
+    }
 
     async function startRecording(device: InputDevice | null) {
       try {
@@ -123,7 +134,9 @@ export function useVoxClean(startState: WorkflowState = initialState) {
       openFile,
 
       removeAudio() {
+        if (stateRef.current.status !== "ready") return;
         dispatch({ type: "audioRemoved" });
+        void releaseAudio();
       },
 
       async transcribe(language: string | null) {
@@ -185,7 +198,9 @@ export function useVoxClean(startState: WorkflowState = initialState) {
       },
 
       startOver() {
+        if (isBusy(stateRef.current)) return;
         dispatch({ type: "reset" });
+        void releaseAudio();
       },
     };
   }, []);
